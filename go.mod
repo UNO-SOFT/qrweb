@@ -7,6 +7,7 @@ require (
 	github.com/aohorodnyk/mimeheader v0.0.6
 	github.com/peterbourgon/ff/v3 v3.3.0
 	github.com/tgulacsi/go v0.22.2
+	golang.org/x/text v0.3.7
 	rsc.io/qr v0.2.0
 )
 

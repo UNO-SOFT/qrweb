@@ -7,10 +7,13 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"image"
 	"image/color"
 	"image/gif"
+	"io"
 	"net/http"
+	"net/http/httputil"
 	"os"
 	"os/signal"
 	"strings"
@@ -19,6 +22,8 @@ import (
 	"github.com/aohorodnyk/mimeheader"
 	"github.com/peterbourgon/ff/v3/ffcli"
 	"github.com/tgulacsi/go/httpunix"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/charmap"
 	"rsc.io/qr"
 )
 
@@ -37,15 +42,38 @@ func Main() error {
 		Exec: func(ctx context.Context, args []string) error {
 			logger.Info("start listening", "addr", *flagAddr)
 			http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+				var body []byte
 				if err := func() error {
-					level := qr.H
+					var err error
+					r.Body = struct {
+						io.Reader
+						io.Closer
+					}{io.LimitReader(r.Body, 1<<20), r.Body}
+					if body, err = httputil.DumpRequest(r, true); err != nil {
+						return err
+					}
+					logger.Info("got", "request", string(body))
 
 					text := r.FormValue("text")
+					logger.Info("text1", "text", text)
 					if text == "" {
 						if text = r.FormValue("data"); text == "" {
 							text = strings.TrimPrefix(r.URL.Path, "/")
 						}
 					}
+
+					charset := r.FormValue("charset")
+					var enc encoding.Encoding
+					if charset != "" && strings.EqualFold(strings.ReplaceAll(charset, "-", ""), "iso88592") {
+						enc = charmap.ISO8859_2
+						if t, err := enc.NewDecoder().String(text); err != nil {
+							return fmt.Errorf("decode %q as %q: %w", text, charset, err)
+						} else {
+							text = t
+						}
+					}
+
+					level := qr.H
 					switch r.FormValue("level") {
 					case "L", "l", "20", "20%":
 						level = qr.L
@@ -82,6 +110,7 @@ func Main() error {
 					}
 					return err
 				}(); err != nil {
+					logger.Error(err, "handle", "request", string(body))
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 				}
 			})
