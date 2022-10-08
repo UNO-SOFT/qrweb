@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 
 	"github.com/UNO-SOFT/zlog"
 	"github.com/aohorodnyk/mimeheader"
@@ -42,9 +43,7 @@ func Main() error {
 					text := r.FormValue("text")
 					if text == "" {
 						if text = r.FormValue("data"); text == "" {
-							if text = r.URL.Path; text != "" && text[0] == '/' {
-								text = text[1:]
-							}
+							text = strings.TrimPrefix(r.URL.Path, "/")
 						}
 					}
 					switch r.FormValue("level") {
@@ -56,16 +55,21 @@ func Main() error {
 						level = qr.Q
 					}
 
-					ah := mimeheader.ParseAcceptHeader(r.Header.Get("Accept"))
+					acc := r.Header.Get("Accept")
+					if acc == "" {
+						acc = r.FormValue("accept")
+					}
+					if acc != "" && strings.IndexByte(acc, '/') < 0 {
+						acc = "image/" + acc
+					}
+					ah := mimeheader.ParseAcceptHeader(acc)
 					logger.Info("encode", "text", text, "level", level, "accept", ah)
 					code, err := qr.Encode(text, level)
 					if err != nil {
 						return err
 					}
 					mt := "image/png"
-					if acc := r.Header.Get("Accept"); acc != "" {
-						_, mt, _ = mimeheader.ParseAcceptHeader(acc).Negotiate([]string{"image/png", "image/gif"}, mt)
-					}
+					_, mt, _ = ah.Negotiate([]string{"image/png", "image/gif"}, mt)
 					w.Header().Set("Content-Type", mt)
 					switch mt {
 					case "image/gif":
