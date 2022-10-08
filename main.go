@@ -73,7 +73,7 @@ func Main() error {
 					w.Header().Set("Content-Type", mt)
 					switch mt {
 					case "image/gif":
-						err = gif.Encode(w, scaledImage{code.Image()}, &gif.Options{
+						err = gif.Encode(w, code.Image(), &gif.Options{
 							NumColors: 2,
 							Quantizer: bwQuantizer{},
 						})
@@ -102,9 +102,3 @@ func (bwQuantizer) Quantize(p color.Palette, m image.Image) color.Palette {
 	}
 	return append(p[:0], color.Black, color.White)
 }
-
-type scaledImage struct {
-	image.Image
-}
-
-func (m scaledImage) At(x, y int) color.Color { return m.Image.At(x>>3-4, y>>3-4) }

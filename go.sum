@@ -435,6 +435,8 @@ github.com/syndtr/goleveldb v1.0.0/go.mod h1:ZVVdQEZoIme9iO1Ch2Jdy24qqXrMMOU6lpP
 github.com/tgulacsi/go v0.22.2 h1:xfCfe8v1BzLi8+vTwq5izPxt1wqcl54xzoA6KZ/fOEU=
 github.com/tgulacsi/go v0.22.2/go.mod h1:DJdLEyuRomUXkuD5K4hXkOmclD3ocfVjhYmjzDp5vCQ=
 github.com/tgulacsi/picago v0.0.0-20171229130838-9e1ac2306c70/go.mod h1:YOW4MCz1GRh0aqedyC48A1CRXSHngOB/O/4+1rUjDQg=
+github.com/tgulacsi/qr v0.0.0-20221008053105-60638b3fcf7e h1:EOyMB6EHLbOoSZuscyn6zyp+nffz/kflhNwWzndGtSk=
+github.com/tgulacsi/qr v0.0.0-20221008053105-60638b3fcf7e/go.mod h1:04Qxvcgf2ORXLiPfOBaj+nGKEpjs3dkAaRU/RxHGLbw=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80/go.mod h1:iFyPdL66DjUD96XmzVL3ZntbzcflLnznH0fr99w5VqE=
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
@@ -746,8 +748,6 @@ perkeep.org v0.0.0-20191227205925-9a1336816afd/go.mod h1:p1748DQf7cjwn22GZKznI+G
 rsc.io/binaryregexp v0.2.0/go.mod h1:qTv7/COck+e2FymRvadv62gMdZztPaShugOCi3I+8D8=
 rsc.io/pdf v0.0.0-20170302045715-1d34785eb915/go.mod h1:n8OzWcQ6Sp37PL01nO98y4iUCRdTGarVfzxY20ICaU4=
 rsc.io/qr v0.1.0/go.mod h1:IF+uZjkb9fqyeF/4tlBoynqmQxUoPfWEKh921coOuXs=
-rsc.io/qr v0.2.0 h1:6vBLea5/NRMVTz8V66gipeLycZMl/+UlFmk8DvqQ6WY=
-rsc.io/qr v0.2.0/go.mod h1:IF+uZjkb9fqyeF/4tlBoynqmQxUoPfWEKh921coOuXs=
 rsc.io/quote/v3 v3.1.0/go.mod h1:yEA65RcK8LyAZtP9Kv3t0HmxON59tX3rD+tICJqUlj0=
 rsc.io/sampler v1.3.0/go.mod h1:T1hPZKmBbMNahiBKFy5HrXp6adAjACjK9JXDnKaTXpA=
 sigs.k8s.io/yaml v1.1.0/go.mod h1:UJmg0vDUVViEyp3mgSv9WPwZCDxu4rQW1olrI1uml+o=
