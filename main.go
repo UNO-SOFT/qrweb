@@ -35,6 +35,7 @@ func main() {
 	}
 }
 
+// Main function
 func Main() error {
 	fs := flag.NewFlagSet("qrweb", flag.ContinueOnError)
 	flagAddr := fs.String("addr", ":3456", "address to listen on. May be unix://")
@@ -52,13 +53,13 @@ func Main() error {
 					if body, err = httputil.DumpRequest(r, true); err != nil {
 						return err
 					}
-					logger.Info("got", "request", string(body))
+					logger.Info("got", "request", maskSecret{text: string(body)})
 
-					text := r.FormValue("text")
+					text := maskSecret{text: r.FormValue("text")}
 					logger.Info("text1", "text", text)
-					if text == "" {
-						if text = r.FormValue("data"); text == "" {
-							text = strings.TrimPrefix(r.URL.Path, "/")
+					if text.text == "" {
+						if text.text = r.FormValue("data"); text.text == "" {
+							text.text = strings.TrimPrefix(r.URL.Path, "/")
 						}
 					}
 
@@ -66,10 +67,10 @@ func Main() error {
 					var enc encoding.Encoding
 					if charset != "" && strings.EqualFold(strings.ReplaceAll(charset, "-", ""), "iso88592") {
 						enc = charmap.ISO8859_2
-						if t, err := enc.NewDecoder().String(text); err != nil {
+						if t, err := enc.NewDecoder().String(text.text); err != nil {
 							return fmt.Errorf("decode %q as %q: %w", text, charset, err)
 						} else {
-							text = t
+							text.text = t
 						}
 					}
 
@@ -92,7 +93,7 @@ func Main() error {
 					}
 					ah := mimeheader.ParseAcceptHeader(acc)
 					logger.Info("encode", "text", text, "level", level, "accept", ah)
-					code, err := qr.Encode(text, level)
+					code, err := qr.Encode(text.text, level)
 					if err != nil {
 						return err
 					}
@@ -130,4 +131,19 @@ func (bwQuantizer) Quantize(p color.Palette, m image.Image) color.Palette {
 		return p
 	}
 	return append(p[:0], color.Black, color.White)
+}
+
+type maskSecret struct {
+	text string
+}
+
+func (s maskSecret) String() string {
+	const prefix = "secret="
+	if i := strings.Index(s.text, prefix); i >= 0 {
+		if j := strings.IndexAny(s.text[i+len(prefix):], "& \r\n\t"); j >= 0 {
+			return s.text[:i+len(prefix)] + "***" + s.text[i+len(prefix)+j:]
+		}
+		return s.text[:i+len(prefix)] + "***"
+	}
+	return s.text
 }
