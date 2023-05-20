@@ -1,4 +1,4 @@
-// Copyright 2022 Tamás Gulácsi. All rights reserved.
+// Copyright 2022, 2023 Tamás Gulácsi. All rights reserved.
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -18,7 +18,7 @@ import (
 	"os/signal"
 	"strings"
 
-	"github.com/UNO-SOFT/zlog"
+	"github.com/UNO-SOFT/zlog/v2"
 	"github.com/aohorodnyk/mimeheader"
 	"github.com/peterbourgon/ff/v3/ffcli"
 	"github.com/tgulacsi/go/httpunix"
@@ -27,17 +27,19 @@ import (
 	"rsc.io/qr"
 )
 
-var logger = zlog.New(zlog.MaybeConsoleWriter(os.Stderr))
+var verbose zlog.VerboseVar
+var logger = zlog.NewLogger(zlog.MaybeConsoleHandler(&verbose, os.Stderr)).SLog()
 
 func main() {
 	if err := Main(); err != nil {
-		logger.Error(err, "Main")
+		logger.Error("Main", "error", err)
 	}
 }
 
 // Main function
 func Main() error {
 	fs := flag.NewFlagSet("qrweb", flag.ContinueOnError)
+	fs.Var(&verbose, "v", "verbose logging")
 	flagAddr := fs.String("addr", ":3456", "address to listen on. May be unix://")
 	app := ffcli.Command{Name: "qrweb", FlagSet: fs,
 		Exec: func(ctx context.Context, args []string) error {
@@ -111,7 +113,7 @@ func Main() error {
 					}
 					return err
 				}(); err != nil {
-					logger.Error(err, "handle", "request", string(body))
+					logger.Error("handle", "request", string(body), "error", err)
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 				}
 			})
