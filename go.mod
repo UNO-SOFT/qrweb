@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.21.0
 
 require (
-	github.com/UNO-SOFT/zlog v0.7.6
+	github.com/UNO-SOFT/zlog v0.7.7
 	github.com/aohorodnyk/mimeheader v0.0.6
 	github.com/peterbourgon/ff/v3 v3.3.1
 	github.com/tgulacsi/go v0.24.4
