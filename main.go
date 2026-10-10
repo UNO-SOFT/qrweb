@@ -1,4 +1,4 @@
-// Copyright 2022, 2023 Tamás Gulácsi. All rights reserved.
+// Copyright 2022, 2026 Tamás Gulácsi. All rights reserved.
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -40,9 +40,10 @@ func main() {
 // Main function
 func Main() error {
 	fs := flag.NewFlagSet("qrweb", flag.ContinueOnError)
-	fs.Var(&verbose, "v", "verbose logging")
+	fs.Var(&verbose, "verbose", "verbose logging")
 	flagAddr := fs.String("addr", ":3456", "address to listen on. May be unix://")
-	app := cli.Command{Name: "qrweb", Flags: fs,
+	app := cli.Command{Name: "qrweb",
+		Flags: fs, FlagConfigs: []cli.FlagConfig{{Name: "verbose", Short: "v"}},
 		Exec: func(ctx context.Context, state *cli.State) error {
 			logger.Info("start listening", "addr", *flagAddr)
 			http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
