@@ -20,7 +20,8 @@ import (
 
 	"github.com/UNO-SOFT/zlog/v2"
 	"github.com/aohorodnyk/mimeheader"
-	"github.com/peterbourgon/ff/v3/ffcli"
+
+	"github.com/UNO-SOFT/cli"
 	"github.com/tgulacsi/go/httpunix"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/charmap"
@@ -41,8 +42,8 @@ func Main() error {
 	fs := flag.NewFlagSet("qrweb", flag.ContinueOnError)
 	fs.Var(&verbose, "v", "verbose logging")
 	flagAddr := fs.String("addr", ":3456", "address to listen on. May be unix://")
-	app := ffcli.Command{Name: "qrweb", FlagSet: fs,
-		Exec: func(ctx context.Context, args []string) error {
+	app := cli.Command{Name: "qrweb", Flags: fs,
+		Exec: func(ctx context.Context, state *cli.State) error {
 			logger.Info("start listening", "addr", *flagAddr)
 			http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 				var body []byte
@@ -123,7 +124,7 @@ func Main() error {
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
-	return app.ParseAndRun(ctx, os.Args[1:])
+	return cli.ParseAndRun(ctx, &app, os.Args[1:], nil)
 }
 
 type bwQuantizer struct{}
